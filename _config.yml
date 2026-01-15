@@ -13,6 +13,8 @@ markdown: kramdown
 plugins:
   - jekyll-remote-theme
 remote_theme: vaibhavvikas/jekyll-theme-minimalistic
+# favicon
+favicon: true
 
 # permalink
 permalink: /:categories/:year/:month/:day/:title/
