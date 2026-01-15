@@ -20,3 +20,6 @@ permalink: /:categories/:year/:month/:day/:title/
 # build target
 include:
   - docs
+
+# timezone
+timezone: Asia/Tokyo
