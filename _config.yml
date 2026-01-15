@@ -1,0 +1,17 @@
+title: "Raind Notes"
+description: "自作コンテナランタイムの実装メモとセキュリティ検討"
+lang: ja-JP
+
+# Project Page
+url: "https://pyxgun.github.io"
+baseurl: "/raind-note"
+
+# Markdown
+markdown: kramdown
+
+# permalink
+permalink: /:categories/:year/:month/:day/:title/
+
+# build target
+include:
+  - docs

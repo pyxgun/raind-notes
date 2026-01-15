@@ -1,0 +1,10 @@
+:root { --fg:#111; --bg:#fff; --muted:#666; --border:#e5e5e5; }
+body { margin:0; color:var(--fg); background:var(--bg); font-family: system-ui, -apple-system, Segoe UI, sans-serif; line-height:1.7; }
+.container { max-width: 920px; margin: 0 auto; padding: 16px; }
+.header { border-bottom:1px solid var(--border); }
+.brand { font-weight:700; text-decoration:none; color:var(--fg); margin-right:16px; }
+.nav a { margin-right:12px; text-decoration:none; color:var(--muted); }
+.nav a:hover { color:var(--fg); }
+.footer { border-top:1px solid var(--border); margin-top: 32px; padding: 16px 0; color:var(--muted); }
+code, pre { background:#f6f6f6; }
+pre { padding:12px; overflow:auto; }
