@@ -4,10 +4,15 @@ lang: ja-JP
 
 # Project Page
 url: "https://pyxgun.github.io"
-baseurl: "/raind-note"
+baseurl: "/raind-notes"
 
 # Markdown
 markdown: kramdown
+
+# theme
+plugins:
+  - jekyll-remote-theme
+remote_theme: vaibhavvikas/jekyll-theme-minimalistic
 
 # permalink
 permalink: /:categories/:year/:month/:day/:title/

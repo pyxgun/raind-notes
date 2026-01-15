@@ -1,6 +1,7 @@
 ---
 layout: default
-title: はじめに
+title: Introduction
+permalink: /docs/introduction/
 ---
 
 # はじめに

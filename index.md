@@ -5,7 +5,7 @@ title: Home
 
 # Raind Notes
 
-- [はじめに]({{ '/docs/1_introduction.html' | relative_url }})
+- [はじめに]({{ '/docs/introduction/' | relative_url }})
 
 ## Posts
 <ul>
