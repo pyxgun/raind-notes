@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Raind Notes
+# Contents
 
 - [はじめに]({{ '/docs/introduction/' | relative_url }})
 
