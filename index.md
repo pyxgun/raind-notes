@@ -7,11 +7,6 @@ title: Home
 
 - [はじめに]({{ '/docs/introduction/' | relative_url }})
 
-## Posts
-<ul>
-  {% for post in site.posts %}
-    <li>
-      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+## Process
+- [コンテナ起動シーケンス#1 create+initモデル]({{ '/_posts/container_startup_sequence_1' | relative_url }})
+- [コンテナ起動シーケンス#2 create+shim+initモデル(PTY接続)]({{ '/_posts/container_startup_sequence_2' | relative_url }})

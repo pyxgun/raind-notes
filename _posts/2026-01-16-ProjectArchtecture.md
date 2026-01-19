@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Project Arcihtecture
+title: Project Architecture
 ---
 
 # Raindコンテナランタイムスタック
@@ -28,14 +28,16 @@ flowchart LR
     subgraph resources
     hlruntime -. manage layer .-> image
     hlruntime -. manage lifecycle .-> container
-    llruntime -- build container --> container
+    llruntime e3@-- build container --> container
+    e3@{ animate: true, animation: slow }
     end
 ```
 
 ## Raind CLI
 Raindコンテナランタイムスタックを操作するためのCLIツール。  
 高レベルコンテナランタイムはREST APIをインターフェースとしているため、  
-コマンドラインのパースおよびAPIリクエストを行う。
+コマンドラインのパースおよびAPIリクエストを行う。  
+(repository: https://github.com/pyxgun/Raind-CLI)
 
 ## Condenser
 コンテナライフサイクルおよびイメージ管理を行う高レベルコンテナランタイム。  

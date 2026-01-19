@@ -1,19 +1,19 @@
 ---
 layout: default
 title: Container Startup Sequence
+permalink: /_posts/container_startup_sequence_1
 ---
 
-# Container Startup Sequence
-今回は、低レベルコンテナランタイム(Droplet)におけるコンテナ起動シーケンスについてです。
+# コンテナ起動の基本シーケンス
 コンテナの起動、言い換えるとコンテナとなりうるプロセスの起動は、通常の子プロセス生成(fork)とは異なった処理順で起動します。  
-通常の子プロセス生成は、親プロセスのリソース制限や名前空間などをそのまま引き継ぎますが、
-コンテナプロセスはこれらを隔離し独立したプロセスとして生成する必要があるからです。
-どのように子プロセスを生成し、生成したプロセスの環境をセットアップしていくかをまとめてみます。
+通常の子プロセス生成は親プロセスのリソース制限や名前空間などをそのまま引き継ぎますが、
+コンテナプロセスはこれらを隔離し独立したプロセスとして生成する必要があるからです。  
+ここではRaindがどのように子プロセスを生成し、生成したプロセスの環境をセットアップしていくかをまとめています。
 
 ## 起動シーケンス
 Dropletでは、createとstartの2フェーズでコンテナプロセスを起動しています。
 
-### createフェーズ
+### createフェーズ (create+init起動)
 ```mermaid
 sequenceDiagram
     autonumber
@@ -50,7 +50,8 @@ initプロセスと呼ばれるコンテナの元となるプロセスの起動�
 
 作成されたinitプロセスは、即座に同期用のFIFOを開きます。
 FIFO=名前付きパイプは、開いた側はFIFOに対して何らかのデータが書き込まれるまで処理を止める動作があり、
-これを利用することでホスト側のセットアップが完了する前にinitプロセスが走ることを防ぎます。
+これを利用することでホスト側のセットアップが完了する前にinitプロセスが走ることを防ぎます。  
+この起動フローをraindでは **create+initモデル** と呼んでいます。
 
 ### startフェーズ
 ```mermaid
@@ -102,9 +103,9 @@ FIFOへデータが書き込まれ処理を再開したinitプロセスは、hos
 ```
 
 ### createフェーズ
-dropletのサブコマンド:createを実行し、initプロセスを起動します。
+raindのサブコマンド:createを実行し、initプロセスを起動します。
 ```bash
-$ droplet createt 01kf2a3a1tbc
+$ raind container createt 01kf2a3a1tbc
 
 $ ps -fp 90190
 UID          PID    PPID  C STIME TTY          TIME CMD
@@ -128,9 +129,9 @@ OCI Spec(config.json)やステータス情報(state.json)等もありますが�
 initプロセスはこのexec.fifoを開き、開始シグナル待機状態となっています。
 
 ### startフェーズ
-dropletのサブコマンド:startを実行し、initプロセスへ開始シグナルを送信します。
+raindのサブコマンド:startを実行し、initプロセスへ開始シグナルを送信します。
 ```bash
-$ droplet start 01kf2a3a1tbc
+$ raind container start 01kf2a3a1tbc
 
 $ ps -fp 90190
 UID          PID    PPID  C STIME TTY          TIME CMD
@@ -142,9 +143,9 @@ root       90684   90190  0 11:32 pts/7    00:00:00 sleep 3600
 
 ### コンテナ内プロセス確認
 せっかくなのでコンテナ内のプロセスも確認してみます。  
-dropletのサブコマンド:execを実行し、コンテナ内のプロセス情報を見てみます。
+raindのサブコマンド:execを実行し、コンテナ内のプロセス情報を見てみます。
 ```bash
-$ droplet exec -i 01kf2a3a1tbc /bin/bash
+$ raind container exec -t 01kf2a3a1tbc /bin/bash
 root@01kf2a3a1tbc:/# ps -ef
 UID        PID  PPID  C STIME TTY          TIME CMD
 root         1     0  0 02:29 ?        00:00:00 /bin/sh -c echo hello; sleep 3600

@@ -8,3 +8,5 @@ vendor/
 # Ruby
 *.gem
 *.rbc
+
+scripts/
