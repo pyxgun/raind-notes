@@ -4,17 +4,23 @@ title: Container Startup with PTY
 permalink: /_posts/container_startup_sequence_2
 ---
 
-# 対話形式でのコンテナ起動
+**目次**
+* TOC
+{:toc}
+
+---
+
+## 対話形式でのコンテナ起動
 [コンテナ起動シーケンス#1 create+initモデル]({{ '/_posts/container_startup_sequence_1' | relative_url }})で紹介したシーケンス(create+init起動)は、バックグラウンドコンテナ専用のフローです。  
 /bin/bash起動によるコンテナ内操作や操作ターミナル上にログを表示させながらのリアルタイム確認といった、いわゆる対話形式での起動は別のフローになります。  
 ここではRaindにおける対話形式でのコンテナ起動についてまとめています。
 
-## create+init起動におけるTTY問題
+### create+init起動におけるTTY問題
 前回紹介したバックグラウンドでは、対話形式でのコンテナ起動ができません。  
 具体的に例を挙げると、/bin/bashをエントリポイントとして持つコンテナは起動直後に即時終了します。  
 これはプロセスが接続しているTTYの状況を整理することで理解できます。
 
-### create+initモデル: 起動時
+#### create+initモデル: 起動時
 ```mermaid 
 flowchart TB
     A[stdin/stdout/stderr]
@@ -47,7 +53,7 @@ create+initモデルのプロセスとTTYはこのようになっています。
 createプロセス内でinitプロセス(コマンド)を実行しますが、ここも同様に親プロセスからfdを継承します。initプロセスにとっての親プロセスのfdはbashと同様のTTYなので、ここで登場している3つのプロセスは全て同一のTTYに繋がっています。  
 ここまでの状況であれば、initプロセス=コンテナプロセスに対してもbashからの操作が届く状況です。
 
-### create+initモデル: createプロセス終了時
+#### create+initモデル: createプロセス終了時
 前回紹介したとおり、createプロセスは必要なセットアップが終了した後、initプロセスの終了を待たずにCloseします。  
 このときのプロセスとTTYの状況は次のようになります。  
 
@@ -75,7 +81,7 @@ createプロセスが終了すると、initプロセスは親プロセスが不�
 (たまにコンテナプロセスのTTY接続が切断される、という表現を見ますが、"接続しているが利用できない"の方が正しい表現です)  
 bashがエントリポイントの場合、bashは起動時にプロセスのstdinを開き入力待ちに入りますが、この状況ではstdinのfdであるTTYとの関係性が壊れているためstdinを開くことができず、EOF判定となり即時終了してしまう、というわけです。  
 
-## create+shim+initモデル
+### create+shim+initモデル
 この問題を解消するために、Raindでは create+**shim**+initモデルを用意しています。  
 図に表すと次のようになります。
 
@@ -131,7 +137,7 @@ create+initモデルとの差分は次の通りです。
 
 このモデルにした場合、createプロセスが終了した場合の動作が変わります。
 
-### create+shim+initモデル: createプロセス終了時
+#### create+shim+initモデル: createプロセス終了時
 ```mermaid 
 flowchart TB
     A[stdin/stdout/stderr]
@@ -179,11 +185,11 @@ createプロセスが終了した場合、その子プロセスであるshimプ�
 を**PTY接続(疑似端末)**とよび、Dockerでは `-t` オプションを指定してこのような操作をしています。  
 以降はcreate+shim+initモデルで起動したコンテナを **PTY接続コンテナ** と呼ぶことにします。
 
-## PTY接続コンテナまでの導線
+### PTY接続コンテナまでの導線
 PTY接続によりinitプロセスが生き続ける、つまり延命することはできるようになりましたが、このままでは図からもわかる通りTTYまでの接続経路はありません。  
 ここからはPTY接続を行ったinitプロセス(=コンテナ)までの導線について紹介します。  
 
-### 1. Unix Socket
+#### 1. Unix Socket
 TTYまでの接続経路の一つとして、まずはUnix Socketを利用します。
 
 ```mermaid 
@@ -215,7 +221,7 @@ flowchart TB
 shimプロセスはPTY Pairの作成と併せて、Unix Socketを作成します。  
 その後、shimプロセスはUnix SocketとPTY masterのデータ中継処理を行う処理に入ります。
 
-### 2. Web Socket
+#### 2. Web Socket
 RaindではCondenser(高レベルコンテナランタイム)をデーモンとして起動しているため、Unix Socketへの接続はCondenserが担います。そのうえで、ユーザはRaind CLIを使いCondenserに対してWebSocket経由でデータを送受信します。
 
 ```mermaid 
@@ -259,7 +265,7 @@ flowchart TB
 
 RaindではUnixSocket+WebSocketを利用しPTY接続を行ったコンテナへの操作経路を確保しています。
 
-## 起動シーケンスまとめ
+### 起動シーケンスまとめ
 ここまでのcreate+init+shimモデルにおける起動シーケンスをまとめると以下のようになります。
 
 ```mermaid
@@ -292,8 +298,8 @@ sequenceDiagram
     subcmd_create-->>user: exit
 ```
 
-## 実動作
-### 作成
+### 実動作
+#### 作成
 実際の動作を確認してみます。  
 raind create実行時に、`-t` オプションを付けて起動します。  
 ```bash
@@ -318,7 +324,7 @@ droplet 421743  root  8u  unix 0xffff0001ed549c00  0t0 1463550 /etc/raind/contai
 また、`tty.sock`がつながっているプロセスとして421743=shimプロセスとなっています。  
 Socketはinitプロセスには直接つながっておらず、Shimが受け取りPTY slave=initプロセスへ転送するため、この状態は正常です。
 
-### 起動&接続
+#### 起動&接続
 作成したコンテナの起動フローは、create+initモデルと同様です。  
 ```bash
 $ raind container start 01kf9zxrnx99

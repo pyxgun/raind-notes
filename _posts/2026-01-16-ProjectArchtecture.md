@@ -1,9 +1,16 @@
 ---
 layout: default
 title: Project Architecture
+permalink: /_posts/project_architecture
 ---
 
-# Raindコンテナランタイムスタック
+**目次**
+* TOC
+{:toc}
+
+---
+
+## Raindコンテナランタイムスタック
 Raindは3つのコンポーネントで構成されたコンテナランタイムスタックの総称です。  
 
 - **Raind CLI**: Raindコンテナランタイムスタックの操作を提供するCLIツール
@@ -33,21 +40,21 @@ flowchart LR
     end
 ```
 
-## Raind CLI
+### Raind CLI
 Raindコンテナランタイムスタックを操作するためのCLIツール。  
 高レベルコンテナランタイムはREST APIをインターフェースとしているため、  
 コマンドラインのパースおよびAPIリクエストを行う。  
-(repository: https://github.com/pyxgun/Raind-CLI)
+[Repository: Raind-CLI](https://github.com/pyxgun/Raind-CLI)
 
-## Condenser
+### Condenser
 コンテナライフサイクルおよびイメージ管理を行う高レベルコンテナランタイム。  
 コンテナの起動に伴うホストリソースのセットアップ、コンテナ設定構築、イメージ取得等の低レベルコンテナランタイムによるコンテナ起動のための環境整備を行う。  
 また、起動しているコンテナの死活監視等によるライフサイクル管理も併せて担う。  
-(repository: https://github.com/pyxgun/Condenser)
+[Repository: Condenser](https://github.com/pyxgun/Condenser)
 
-## Droplet
+### Droplet
 起動/停止/削除を行う低レベルコンテナランタイム。  
 高レベルコンテナランタイムによって用意された環境を利用し、コンテナを実際に構築する役割を担う。  
 DropletはOCI準拠のインターフェースを備えたバイナリファイルとして設計しており、
 高レベルコンテナランタイムから実行される。  
-(repository: https://github.com/pyxgun/Droplet)
+[Repository: Droplet](https://github.com/pyxgun/Droplet)

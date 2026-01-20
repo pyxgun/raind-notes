@@ -4,16 +4,22 @@ title: Container Startup Sequence
 permalink: /_posts/container_startup_sequence_1
 ---
 
-# コンテナ起動の基本シーケンス
+**目次**
+* TOC
+{:toc}
+
+---
+
+## コンテナ起動の基本シーケンス
 コンテナの起動、言い換えるとコンテナとなりうるプロセスの起動は、通常の子プロセス生成(fork)とは異なった処理順で起動します。  
 通常の子プロセス生成は親プロセスのリソース制限や名前空間などをそのまま引き継ぎますが、
 コンテナプロセスはこれらを隔離し独立したプロセスとして生成する必要があるからです。  
 ここではRaindがどのように子プロセスを生成し、生成したプロセスの環境をセットアップしていくかをまとめています。
 
-## 起動シーケンス
+### 起動シーケンス
 Dropletでは、createとstartの2フェーズでコンテナプロセスを起動しています。
 
-### createフェーズ (create+init起動)
+#### createフェーズ (create+init起動)
 ```mermaid
 sequenceDiagram
     autonumber
@@ -53,7 +59,7 @@ FIFO=名前付きパイプは、開いた側はFIFOに対して何らかのデ�
 これを利用することでホスト側のセットアップが完了する前にinitプロセスが走ることを防ぎます。  
 この起動フローをraindでは **create+initモデル** と呼んでいます。
 
-### startフェーズ
+#### startフェーズ
 ```mermaid
 sequenceDiagram
     autonumber
@@ -88,7 +94,7 @@ startフェーズでは、
 FIFOへ書き込む開始シグナルはSIGTERMやSIGINTといったものではなく、1バイト書き込みを行っています。  
 FIFOへデータが書き込まれ処理を再開したinitプロセスは、hostname変更やfilesystmeの構築、pivot_rootによるファイルシステム隔離等々の最終セットアップを行い、最後にOCI Specで指定されたEntrypointを実行します。
 
-## 実動作
+### 実動作
 実際の動作を見ていきます。  
 本来はOCI Specの準備やBundleの準備等が必要ですが、ここでは省略して起動時のinitプロセスに着目します。  
 テストで利用するOCI Specに定義されているEntrypointは以下です。
@@ -102,7 +108,7 @@ FIFOへデータが書き込まれ処理を再開したinitプロセスは、hos
 }
 ```
 
-### createフェーズ
+#### createフェーズ
 raindのサブコマンド:createを実行し、initプロセスを起動します。
 ```bash
 $ raind container createt 01kf2a3a1tbc
@@ -128,7 +134,7 @@ drwxr-xr-x 2 root root 4096 Jan 16 11:43 work
 OCI Spec(config.json)やステータス情報(state.json)等もありますが、`exec.fifo`が名前付きパイプです。  
 initプロセスはこのexec.fifoを開き、開始シグナル待機状態となっています。
 
-### startフェーズ
+#### startフェーズ
 raindのサブコマンド:startを実行し、initプロセスへ開始シグナルを送信します。
 ```bash
 $ raind container start 01kf2a3a1tbc
@@ -141,7 +147,7 @@ root       90684   90190  0 11:32 pts/7    00:00:00 sleep 3600
 再度initプロセスを確認すると、CMDが `droplet init ...` から、 `/bin/sh -c ...` に変わっています。これはOCI Specで指定したEntrypointです。  
 また、sleepコマンドはentrypointの子プロセスとして起動していることも確認できます。
 
-### コンテナ内プロセス確認
+#### コンテナ内プロセス確認
 せっかくなのでコンテナ内のプロセスも確認してみます。  
 raindのサブコマンド:execを実行し、コンテナ内のプロセス情報を見てみます。
 ```bash
