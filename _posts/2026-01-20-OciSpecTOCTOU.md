@@ -117,7 +117,7 @@ RaindではConfiguration Fileを読み込む際に、以下のような処理を
     2. 記録用ファイルへHash#1を記録 *Hash#2
     3. Configuration Fileの読み込み
     4. Configuration FileのHashを再度計算 *Hash#3
-    5. Hash#1とHash#2の突合 (1.～2.間のTOCTOU対策)
+    5. Hash#1とHash#2の突合 (記録用Hash値改竄対策)
     6. Hash#2とHash#3の突合 (2.～4.間のTOCTOU対策)
 2. shimプロセス
     1. 記録用ファイルからHash値を読み込み *Hash#2
