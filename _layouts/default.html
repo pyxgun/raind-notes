@@ -35,13 +35,13 @@
         pre.replaceWith(div);
         }
 
-        // Mermaid を実行
+        // Mermaid
         await mermaid.run({ querySelector: ".mermaid" });
     });
     </script>
     {% include head-custom.html %}
 </head>
-  <body>
+  <body class="page-{{ page.slug | default: page.title | slugify }}{% if page.toc_h2_only %} toc-h2-only{% endif %}">
     <div class="wrapper">
       <div class="sidebar">
         <header>

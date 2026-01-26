@@ -14,6 +14,10 @@ title: Home
 - [コンテナ起動シーケンス#2 create+shim+initモデル(PTY接続)]({{ '/_posts/container_startup_sequence_2' | relative_url }})
 
 ## Security
+### - AuthN/AuthZ
+- [mTLSよる認証]({{ '/_posts/mtls' | relative_url }})
+- [SPIFFEによる認可]({{ '/_posts/spiffe' relative_url }})
+
 ### - OCI Configuration
 - [TOCTOU攻撃と対策]({{ '/_posts/oci_configuration_toctou' | relative_url }})
 

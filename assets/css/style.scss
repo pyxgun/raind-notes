@@ -1,0 +1,9 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* TOC の下位階層（子 ul）を隠す */
+body.toc-h2-only #markdown-toc ul {
+  display: none;
+}
