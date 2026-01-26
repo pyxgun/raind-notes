@@ -16,7 +16,7 @@ title: Home
 ## Security
 ### - AuthN/AuthZ
 - [mTLSよる認証]({{ '/_posts/mtls' | relative_url }})
-- [SPIFFEによる認可]({{ '/_posts/spiffe' relative_url }})
+- [SPIFFEによる認可]({{ '/_posts/authz_spiffe' | relative_url }})
 
 ### - OCI Configuration
 - [TOCTOU攻撃と対策]({{ '/_posts/oci_configuration_toctou' | relative_url }})
